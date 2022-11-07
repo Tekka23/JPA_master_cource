@@ -1,16 +1,30 @@
-package com.tekka.jpa_master_cource;
+package com.tekka.jpa_master_cource.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static javax.persistence.GenerationType.SEQUENCE;
 
 
 @Entity
 @Table(name = "student")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Student {
 
     @Id
+    @SequenceGenerator(name = "seq_id", sequenceName = "seq_id", allocationSize = 20)
+    @GeneratedValue(strategy = SEQUENCE, generator = "seq_id")
     private Long id;
     @Column(nullable = false)
     private String firstName;
@@ -21,56 +35,21 @@ public class Student {
     @Column(nullable = false)
     private Integer age;
 
-    public Student() {
-    }
+    @OneToOne(mappedBy = "student",
+              orphanRemoval = true)
+    private StudentCard studentCard;
 
-    public Student(Long id, String firstName, String lastName, String email, Integer age) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.age = age;
-    }
+    @OneToMany(
+            mappedBy = "student",
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private Set<Book> books = new HashSet<>();
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
+    @OneToMany(
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            mappedBy = "student"
+            )
+    private List<Enrollment> enrollmentsList = new ArrayList<>();
 
     @Override
     public String toString() {
@@ -81,5 +60,18 @@ public class Student {
                 ", email='" + email + '\'' +
                 ", age=" + age +
                 '}';
+    }
+
+    public void addBook(Book book){
+        if (!this.books.contains(book)){
+            this.books.add(book);
+            book.setStudent(this);
+        }
+    }
+    public void removeBook(Book book){
+        if(this.books.contains(book)){
+            this.books.remove(book);
+            book.setStudent(null);
+        }
     }
 }
