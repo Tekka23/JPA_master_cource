@@ -26,13 +26,13 @@ public class Student {
     @SequenceGenerator(name = "seq_id", sequenceName = "seq_id", allocationSize = 20)
     @GeneratedValue(strategy = SEQUENCE, generator = "seq_id")
     private Long id;
-    @Column(nullable = false)
+    @Column()
     private String firstName;
-    @Column(nullable = false)
+    @Column()
     private String lastName;
-    @Column(nullable = false)
+    @Column()
     private String email;
-    @Column(nullable = false)
+    @Column()
     private Integer age;
 
     @OneToOne(mappedBy = "student",

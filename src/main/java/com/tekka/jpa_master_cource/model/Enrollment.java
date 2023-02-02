@@ -14,7 +14,6 @@ public class Enrollment {
 
     @EmbeddedId
     private EnrollmentId enrollmentId;
-
     @ManyToOne
     @MapsId("studentId")
     @JoinColumn(name = "student_id",
